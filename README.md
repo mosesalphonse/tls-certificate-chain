@@ -4,9 +4,10 @@ create our own tls certificate chain steps
 #  get the config file into the current directory:
 
 ```
-git clone 
+git clone https://github.com/mosesalphonse/tls-certificate-chain.git
 
-cd 
+cd tls-certificate-chain
+
 ```
 
 # Root CA key for self-signing
