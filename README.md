@@ -1,6 +1,10 @@
 # tls-certificate-chain
 Create our own TLS certificate chains
 
+# 1) Create server certificate chain without any intermediate certificate:
+
+
+   
 ## Root CA:
 
 
