@@ -1,46 +1,70 @@
 # tls-certificate-chain
-create our own tls certificate chain steps
+Create our own TLS certificate chains
 
-#  get the config file into the current directory:
+## Root CA:
 
-```
-git clone https://github.com/mosesalphonse/tls-certificate-chain.git
 
-cd tls-certificate-chain
+### Root CA private key ( for self-sign CA, sign the server certificate)
 
 ```
-
-# Root CA private key ( for self-sign CA, sign the server certificate)
-
-```
-openssl genrsa -out sash_root.key 4096
+openssl genrsa -out Sash_CA.key 2048
 
 ```
 
-# Create CA CSR and self-sign CA cert using the above Key
+### Create CA CSR and self-sign CA cert using the above Key
 
 ```
-openssl req -x509 -new -nodes -key sash_root.key -days 3650 -config sash.cfg -out sash_root.pem
-
-```
-
-# Generate private key for server certificate:
-
-```
-openssl genrsa -out sash_cert.key 4096
+openssl req -new -sha256 -key Sash_CA.key -out Sash_CA.csr -subj "/C=UK/ST=Gloucester/L=Cirencester/O=Sash/CN=SASH CA CERTIFICATE"
 
 ```
 
-# Create CSR for the server certicate:
+### Generate CA Certificate
 
 ```
-openssl req -new -key sash_cert.key -out sash.csr -config sash.cfg
+openssl x509 -signkey Sash_CA.key -in Sash_CA.csr -req -days 3650 -out Sash_CA.pem
 
 ```
 
-# Sign the server certificate with Root CA
+### View Certificate
 
 ```
-openssl x509 -req -in sash.csr -CA sash_root.pem -CAkey sash_root.key -CAcreateserial  -out sash_server.crt -days 365 -sha256
+openssl x509 -text -noout -in Sash_CA.pem
+
+```
+
+## Generate Server Certificate directly signed by CA
+
+### Generate private key for server certificate:
+
+```
+openssl genrsa -out sash1.key 2048
+
+```
+
+### Create CSR for the server certicate:
+
+```
+openssl req -new -sha256 -key sash1.key -out sash1.csr -subj "/C=UK/ST=Gloucester/L=Cirencester/O=Sash/CN=ssh.com/subjectAltName=sash1.com"
+
+```
+
+### Sign the server certificate using Root CA
+
+```
+openssl x509 -req -in sash1.csr -CA Sash_CA.pem -CAkey Sash_CA.key -CAcreateserial -out sash1.pem -days 3650 -sha256
+
+```
+
+### View Certificate
+
+```
+openssl x509 -text -noout -in sash1.pem
+
+```
+
+### verify Certificate chain's signature using CA's public key 
+
+```
+openssl verify -CAfile Sash_CA.pem -untrusted  Sash_CA.pem sash1.pem
 
 ```
