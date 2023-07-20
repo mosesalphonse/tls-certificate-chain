@@ -72,3 +72,14 @@ openssl x509 -text -noout -in sash1.pem
 openssl verify -CAfile Sash_CA.pem -untrusted  Sash_CA.pem sash1.pem
 
 ```
+**where** 
+  -CAfile --> CA certificate
+  -untrusted --> First value should be issuer certificate, in this case CA is the issuer. In case of multiple intermidiate CAs, combine all the 
+   intermidiate CA certificates in one single file
+
+            --> Second value is server(leaf) certificate
+
+**Note**: While verifying the signature of the whole certificate chain, it uses public key which is embbed in the issuer certificate.
+
+
+  
