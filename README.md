@@ -82,4 +82,105 @@ openssl verify -CAfile Sash_CA.pem -untrusted  Sash_CA.pem sash1.pem
 **Note**: While verifying the signature of the whole certificate chain, it uses public key which is embbed in the issuer certificate.
 
 
-  
+# 2) Create server certificate chain with one intermediate CA certificate:  
+
+## Root CA:
+
+
+### Root CA private key ( for self-sign CA, sign the server certificate)
+
+```
+openssl genrsa -out RootCA.key 4096
+
+```
+### Create CA CSR and self-sign CA cert using the above Key
+
+```
+openssl req -new -x509 -days 1826 -key RootCA.key -out RootCA.crt
+
+```
+### view the Root CA certificate
+
+```
+openssl x509 -in RootCA.crt -noout -text
+
+```
+### Verify the Root CA's signature (its self signed)
+
+```
+openssl verify -CAfile RootCA.crt -untrusted RootCA.crt RootCA.crt
+
+```
+
+## Intermediate  CA
+
+
+### Intermediate CA private key
+
+```
+openssl genrsa -out IntermediateCA.key 4096
+
+```
+### Create Intermediate CA CSR and sign with its private Key
+```
+openssl req -new -key IntermediateCA.key -out IntermediateCA.csr
+
+```
+Create domainCA.ext file with the below content. This will enable the intermediate certificate as CA (CA:TRUE) extentions
+
+**domainCA.ext**
+```
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:TRUE
+keyUsage = keyCertSign, cRLSign, digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+```
+
+### Sign Intermediate certificate with Root CA's private key and generate Intermediate Certificate
+
+```
+openssl x509 -req -days 1000 -in IntermediateCA.csr -CA RootCA.crt -CAkey RootCA.key -CAcreateserial -out IntermediateCA.crt -extfile domainCA.ext
+
+```
+### view the Intermediate CA certificate
+
+```
+openssl x509 -in IntermediateCA.crt -noout -text
+
+```
+### Verify the Intermediate CA's signature (it is signed by Root CA)
+
+```
+openssl verify -CAfile RootCA.crt -untrusted RootCA.crt IntermediateCA.crt
+
+```
+
+### Server(leaf) private key
+
+```
+openssl genrsa -out Server.key 2048
+
+```
+### Create server (leaf) CSR and sign with its private Key
+```
+openssl req -new -key Server.key -out Server.csr
+
+```
+
+### Sign server(leaf) certificate with Intermediate CA's private key and generate server (leaf) Certificate
+
+```
+openssl x509 -req -days 1000 -in Server.csr -CA IntermediateCA.crt -CAkey IntermediateCA.key -set_serial 0101  -out Server.crt -sha1
+
+```
+### view the Intermediate CA certificate
+
+```
+openssl x509 -in Server.crt -noout -text
+
+```
+### Verify the Intermediate CA's signature (it is signed by Root CA)
+
+```
+openssl verify -CAfile RootCA.crt -untrusted IntermediateCA.crt Server.crt
+
+```
