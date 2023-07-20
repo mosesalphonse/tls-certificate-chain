@@ -3,7 +3,6 @@ Create our own TLS certificate chains
 
 # 1) Create server certificate chain without any intermediate certificate:
 
-
    
 ## Root CA:
 
@@ -76,13 +75,13 @@ openssl verify -CAfile Sash_CA.pem -untrusted  Sash_CA.pem sash1.pem
   -CAfile --> CA certificate
   -untrusted --> First value should be issuer certificate, in this case CA is the issuer. In case of multiple intermidiate CAs, combine all the 
    intermidiate CA certificates in one single file
-
-            --> Second value is server(leaf) certificate
+       -   --> Second value is server(leaf) certificate
 
 **Note**: While verifying the signature of the whole certificate chain, it uses public key which is embbed in the issuer certificate.
 
 
 # 2) Create server certificate chain with one intermediate CA certificate:  
+
 
 ## Root CA:
 
@@ -153,6 +152,9 @@ openssl x509 -in IntermediateCA.crt -noout -text
 openssl verify -CAfile RootCA.crt -untrusted RootCA.crt IntermediateCA.crt
 
 ```
+
+## Server (leaf) Certificate:
+
 
 ### Server(leaf) private key
 
