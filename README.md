@@ -1,11 +1,16 @@
-# tls-certificate-chain
+# SSL / TLS certificate-chain
 
-Usefull Openssl commands to create complete SSL/TLS certificate chain, verify the signature, encrypt and decypt sample file.
+**Usefull Openssl commands to create complete SSL/TLS certificate chain, verify the signature, encrypt and decypt sample file.**
 
-a) Create complete chain of SSL/TLS certificates
-b) Verify the signature using the CA's public keys
-c) Encrypt the file using public key and dercypt the encrypted text using private key
-
+<li>
+Create complete chain of SSL/TLS certificates
+   </li>
+   <li>
+Verify the signature using the CA's public keys
+      </li>
+      <li>
+Encrypt the file using public key and dercypt the encrypted text using private key
+</li>
 
 # 1) Create server certificate chain without any intermediate certificate:
 
