@@ -1,5 +1,11 @@
 # tls-certificate-chain
-Create our own TLS certificate chains
+
+Usefull Openssl commands to create complete SSL/TLS certificate chain, verify the signature, encrypt and decypt sample file.
+
+a) Create complete chain of SSL/TLS certificates
+b) Verify the signature using the CA's public keys
+c) Encrypt the file using public key and dercypt the encrypted text using private key
+
 
 # 1) Create server certificate chain without any intermediate certificate:
 
@@ -184,5 +190,36 @@ openssl x509 -in Server.crt -noout -text
 
 ```
 openssl verify -CAfile RootCA.crt -untrusted IntermediateCA.crt Server.crt
+
+```
+
+
+# 3) Encrypt and Decrypt:  
+
+
+### Extract public key from the certificate
+
+```
+openssl x509 -pubkey -noout -in Server.crt  > pub.pem
+
+openssl x509 -pubkey -noout -in IntermediateCA.crt  > inter_pub.pem
+
+```
+
+### Encrypt the sample file using public key
+
+```
+openssl rsautl -encrypt -pubin -inkey pub.pem -in sash.txt | base64 > sash_encrypted.txt
+
+openssl rsautl -encrypt -pubin -inkey inter_pub.pem -in sash.txt | base64 > inter_encrypted.txt
+
+```
+
+### Decrypt the encrypted file using private key
+
+```
+cat sash_encrypted.txt | base64 -d | openssl rsautl -decrypt -inkey Server.key
+
+cat inter_encrypted.txt | base64 -d | openssl rsautl -decrypt -inkey IntermediateCA.key
 
 ```
